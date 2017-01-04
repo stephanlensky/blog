@@ -1,0 +1,59 @@
+<html>
+	<head>
+		<meta charset='utf-8'/>
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="../../css/style.css">
+		<title>Syndication - kidcontact.org</title>
+	</head>
+
+	<body>
+		<header>
+			
+      		<h2><a href='/'>kidcontact</a>, broadcasting obscure and eclectic crap to the masses</h2>
+		</header>
+
+		<div id="wrapper">
+			<h1><a href="#">Syndication</a></h1>
+			<h2>&mdash; 04 January, 2017</h2>
+			<p>In <a href="../../2016/12/hello-world.html">last week's episode of Dragon Ball Z</a>, we went over the basics of how the static site generator for this blog is set up. Since then, I've updated it to generate an <a href="../../feed.xml">Atom feed</a> for the site using the wonderful Python library <a href="https://github.com/lkiesow/python-feedgen">feedgen</a>. Took about 10 new lines of code and 15 minutes altogether including setup.</p>
+<h3>Atom Feed?</h3>
+<p>Atom is a <a href="https://en.wikipedia.org/wiki/Broadcast_syndication">syndication</a> format spec which expands greatly on previously implemented standards (such as RSS). For those who don't want to read that monster of a Wikipedia article, a syndication file in the context of a blog is simply a file containing basic metadata about the website and the posts on the site. It provides a quick way for dedicated blog readers to aggregate post information about a number of different sites, provided these sites all have a syndication file. There are a number of different standards for what this syndication file should look like, most notable RSS and Atom. Atom's <a href="https://tools.ietf.org/html/rfc4287">RFC</a> was first published in 2005 and 12 years later has finally reached a point where it's well supported enough to be usable by most people, so it was the format chosen for this site.</p>
+<h3>Code</h3>
+<p>There isn't much to using feedgen, since most of the code is simply declarative. There are of course many properties that I haven't bothered to set (such as a recommended time to check for updates, <em>yikes</em>...), but I'm pretty sure I covered all of the important ones.</p>
+<pre><code># blog properties
+fg = FeedGenerator()
+fg.title("Kid Contact's Blog")
+fg.id('http://blog.kidcontact.org')
+fg.subtitle('Broadcasting obscure and eclectic crap to the masses')
+fg.author({'name': 'Stephan Lensky', 'email': 'stephanl.public@gmail.com'})
+fg.link({'href': 'http://blog.kidcontact.org'})
+fg.language('en')
+fg.updated(datetime.now(pytz.timezone('America/New_York')).isoformat())
+
+# properties for each post
+for p in posts:
+    url = 'http://blog.kidcontact.org/{}/{}/{}.html'
+        .format(p['date'].year, p['date'].month, sanitized_name)
+    fe = fg.add_entry()
+    fe.id(url)
+    fe.title(p['name'])
+    fe.updated(pytz.timezone('America/New_York')
+        .localize(p['modified']).isoformat())
+    fe.link({'href': url})
+
+# create files
+fg.atom_file(str(BUILD_DIR) + '/feed.xml')
+fg.rss_file(str(BUILD_DIR) + '/rss.xml')
+</code></pre>
+<p>As you can see, feedgen makes it rather easy to generate both Atom and RSS feeds. Atom is honestly just a better format, but for your convenience RSS is also available <a href="../../rss.xml">here</a>.</p>
+<p>Cheers,<br/>kidcontact</p>
+		</div>
+
+		<footer>
+			<a href='http://www.isc.org/downloads/software-support-policy/isc-license/'>&copy; ISC</a> //
+      		<a href='mailto:stephanl.public@gmail.com'>mail</a> //
+      		<a href='http://kidcontact.org'>apex</a> //
+      		<a href='../../feed.xml'>atom</a>
+		</footer>
+	</body>
+</html>
