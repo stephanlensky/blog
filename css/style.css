@@ -102,6 +102,13 @@ pre code {
     padding: 0;
     border: none;
 }
+
+pre code a {
+    color: #eee;
+}
+pre code a:hover {
+    color: #bbb;
+}
 /* }}} */
 
 /* Text Formatting {{{ */
