@@ -33,7 +33,7 @@
 			<h1><a href="#">Hacking PDFs for Fun and Profit</a></h1>
 			<h2>&mdash; 09 January, 2017</h2>
 			<p>Whenever the going gets tough, I like to remember that someone, somewhere, has a job that involves writing code to work with PDFs. It's comforting somehow, because at least even when it gets bad, my job is easier than that person's. However, I wasn't always so jaded. In fact, this is the story of that one time that I decided PDFs "can't be too hard" and took on a small PDF-centric project for a friend.</p>
-<h3>"Just bubble in the names, no problem, right?"</h3>
+<h3 id="just-bubble-in-the-names-no-problem-right">"Just bubble in the names, no problem, right?"</h3>
 <p>This friend of mine helps run a site called <a href="http://libertyballot.com/">libertyballot.com</a>, which provides voting recommendations for New Hampshire elections. As one might imagine, tensions for the November 8th election were running high, and sample ballots with the canidate recommendations needed to be filled out for all NH electoral districts. Unfortunately, this meant filling out around 300 different ballots, <strong><em>by hand</em></strong>. The year is 2016, we can do better than this, right? Let's write a program to bubble in the names for us!</p>
 <p>"Perfect", I thought when I recieved the 300 sample ballots. "At least they're searchable PDFs with all of the text present". The alternative would be each PDF just containing a literal picture of the ballot, which would mean that finding canidates would require text recognition. That would <em>suck</em>. Immediately, I loaded up Python, ready to tackle this problem using a high level library. Ideally, something that is as to PDFs as <a href="http://docs.python-requests.org/">requests</a> is to HTTP. The reality of the situation wasn't quite as glamorous as I had imagined, however. The easiest way I could find (feel free to correct me) to deal with editing PDFs in Python was as follows:</p>
 <ul>
@@ -41,7 +41,7 @@
 <li>Bubble in names by converting the ballot to a bitmap and drawing some ovals (<a href="http://www.reportlab.com/">reportlab</a>)</li>
 <li>And finally, merge the pages and save the PDF again using <a href="https://github.com/mstamy2/PyPDF2">PyPDF2</a></li>
 </ul>
-<h3>The Point</h3>
+<h3 id="the-point">The Point</h3>
 <p>Believe it or not, this post isn't *really* about complaining about PDFs and PDF tooling in Python. Rather, it's about a rather strange problem I encountered while trying to decode the text on some of the election ballots. An interesting fact I learned about PDFs while working on this project is that text will almost always be encoded and rendered using a font included in the file, ensuring that the file looks the same on all systems. According to the PDF standard, PDF fonts must include a list of character codes matched to the pictures (glyphs) that those codes should be rendered as. Optionally, they can include a unicode equivalent for the actual character (e.g. 'a') that the code represents. The fact that this part is optional is pretty useful for content providers that want to use uncommon symbols in their fonts, but not so much for anyone that wants to rip just the text from the PDF (for text to speech, batch processing, etc.).</p>
 <p>Of course, when I started the project, I didn't know any of this. There I was, happily processing the ballots for Acworth, Albany, Alexandria, Allenstown... Allenstown? What's wrong with the Allenstown ballot? I tried printing out just the text of that ballot:</p>
 <pre><code>INSTRUCTIONS TO VOTERS
@@ -69,7 +69,7 @@
 to the right of
 </code></pre>
 <p>Perfect (sort of). The missing 'i' in 'fill' is a problem with the PDF, not my code, as far as I can tell.</p>
-<h3>A More Generalized Approach</h3>
+<h3 id="a-more-generalized-approach">A More Generalized Approach</h3>
 <p>Theoretically, there should be a better way to build this table. By running a text recognition algorithm on each letter instead of just using my eyes, the process could be automated. However, at one in the morning, sacrifices had to be made somewhere. At least my friend got his completed ballots, right? The GitHub repository for the project can be viewed <a href="https://github.com/kidcontact/2016-election-helper">here</a>.</p>
 <p>May the odds be ever in your favor,<br/>
 kidcontact</p>

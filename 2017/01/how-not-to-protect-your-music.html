@@ -33,12 +33,12 @@
 			<h1><a href="#">How Not to Protect Your Music</a></h1>
 			<h2>&mdash; 23 January, 2017</h2>
 			<p>Ages pass and seasons change, yet one thing stays the same: people will always find a way to download your web content. Just look at the monolithic <a href="https://rg3.github.io/youtube-dl/">youtube-dl</a> project with support for almost <a href="https://rg3.github.io/youtube-dl/supportedsites.html">one thousand supported sites</a> and the effect is easy to see. Of course, some websites make it easier than others.</p>
-<h3>DJ Record Sharing Pools</h3>
+<h3 id="dj-record-sharing-pools">DJ Record Sharing Pools</h3>
 <p>Picture this: you're a DJ, making <em>sick</em> song edits, and you want to share them with your fellow DJ boys. Or maybe you're looking for a clean version of this one really cool song, and are hoping that another DJ has already gone through the work of making one so you don't have to. Where do you go? The answer is any of the numerous DJ record sharing pools available online. These services work by charging a subscription fee to allow DJs to come and share their tracks with one another, making the job easier for everyone. Of course, the record sharing pool keeps all of the money and the DJs get... nothing. This doesn't sound like a very good situation to me.</p>
 <p>One such site, <a href="https://digitaldjpool.com">digitaldjpool.com</a>, has clearly done some serious SEO and shows up in many Google searches for clean versions or edits of songs. One fateful evening I was idly trying to find a clean version of Big Dipper by the Cataracs (great song, by the way) to play at a dance and I found one hosted on this site. Unsurprisingly, the download button is greyed out.</p>
 <p><img alt="Greyed out download button" src="../../img/20170123_download_button.png" />
 <span class='caption'>Heck.</span></p>
-<h3>Solving the Problem Like a True Hacker</h3>
+<h3 id="solving-the-problem-like-a-true-hacker">Solving the Problem Like a True Hacker</h3>
 <p>I might have given up at this point and tried some other site, but I did notice one thing which really intrigued me: this particular site seems to let you listen to a preview of the song. A preview which is... actually the entire song! After seeing this, I knew what I had to do. Inspect element on the audio controls for the song preview.</p>
 <p><img alt="Chrome's inspect element window" src="../../img/20170123_expert_hacking.png" />
 <span class='caption'>Real time footage of hacking</span></p>
@@ -59,7 +59,7 @@
 &lt;input type="hidden" value="/Media/Preview/Preview_Quality_Only_9MUhFnVnAkVMAAIJLTBbVyFaBWnGF3uu16Kz1GcMH8h_kE4n7WHLLsZ4pOZruTqM0" class="hid-song-preview-url"  /&gt;
 </code></pre>
 <p>Everything we need to create a fully tagged mp3 handed to us on a silver platter. You'll notice that the URL for the song preview is different than it was in the jplayer HTML, but they both seem to point to the same thing, so I'm not complaining. Let's write a Python script to automate this process then, shall we?</p>
-<h3>Python-ing it up</h3>
+<h3 id="python-ing-it-up">Python-ing it up</h3>
 <p>Yet again, Python is quick, easy, and the obvious choice (noticing a common theme among these posts? Python rocks&lt;3). We'll use <a href="http://docs.python-requests.org/en/master/">requests</a> to fetch the pages and <a href="https://www.crummy.com/software/BeautifulSoup/">beautifulsoup</a> to parse them.</p>
 <pre><code>import requests
 from bs4 import BeautifulSoup

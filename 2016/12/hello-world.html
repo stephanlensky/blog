@@ -38,7 +38,7 @@
 <br/>-- Wikipedia</p>
 </blockquote>
 <p>If you're reading this, hopefully it means that my little "Hello, World" program worked! What program, you ask? As it turns out, this entire blog was built with a simple static site generator that I wrote in a weekend using Python! Essentially, it's operates quite similarly to programs like <a href="https://jekyllrb.com/">Jekyll</a> and <a href="https://hexo.io/">Hexo</a>, only with fewer features and significantly more bugs! All jokes aside, I had way more fun solving this one myself than I would have if I had just taken one of these prebuilt solutions. Better to learn something, right? :)</p>
-<h3>The Goal</h3>
+<h3 id="the-goal">The Goal</h3>
 <p>We want our script to take a source directory that has posts organized in a nice, readable way (read: markdown, folders, etc.) and convert it to something accessible by a web browser (read: horrifying tag hell). I didn't really put a lot of thought into the directory structure I chose for the source files, but something like this seems to look pretty nice, at least:</p>
 <pre><code>$ tree
 ├── base
@@ -74,7 +74,7 @@
 ├── other
 └── vid
 </code></pre>
-<h3>Copying some files</h3>
+<h3 id="copying-some-files">Copying some files</h3>
 <p>This isn't exactly a one step process, so let's break it up into pieces. First, we copy everything from <strong>base</strong> to our build directory, where our finished website will reside. This is pretty easy using  Python's <code>pathlib</code> and <code>shutil</code>, however, <code>shutil</code> refuses to overwrite files when copying, so we need to ensure that it never tries to.</p>
 <pre><code>def copy_base(base_dir, build_dir):
     for f in base_dir.iterdir():
@@ -85,7 +85,7 @@
         copytree(str(f), str(build_dir.joinpath(f.relative_to('base'))))
 </code></pre>
 <p>One interesting thing to note about this code is the fact that we have to convert our <code>pathlib</code> objects to strings before we can use them in the <code>shutil</code> file manipulation functions. This is due to a weird bit of incosistency in Python's standard library that should be fixed in version 3.6 (see <a href="https://www.python.org/dev/peps/pep-0519/">PEP 519</a>)</p>
-<h3>Getting the posts</h3>
+<h3 id="getting-the-posts">Getting the posts</h3>
 <p>Next, we'll retrieve information about all of the blog posts in the <strong>posts</strong> folder, again, using <code>pathlib</code>. We'll store the results of our search in a list of dictionaries, each dictionary containing the actual post (as markdown), the date the post was last modified at, the timestamp from the <code>date</code> file (if there is one), and lists of paths for all other resources used.</p>
 <pre><code># retrieves information about the post in directory 'dir'
 def get_post(dir):
@@ -159,7 +159,7 @@ for o in post['other']:
     new_name = salt + o.name
     copy(str(o), str(BUILD_DIR.joinpath('other/' + new_name)))
 </code></pre>
-<h3>HTML conversion</h3>
+<h3 id="html-conversion">HTML conversion</h3>
 <p>Finally, we fix all links in the original markdown to reference the new location and name. The approach used here may be a little redundant, considering we already have the new filenames, but I'm not going to worry about it too much.</p>
 <pre><code>def fix_links(md, salt, filenames):
     for f in filenames:
