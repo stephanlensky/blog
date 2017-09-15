@@ -125,6 +125,11 @@ blockquote {
 
 .strike { text-decoration: line-through; }
 
+.math {
+    font-family: serif;
+    font-style: italic;
+}
+
 /* }}} */
 
 /* Images and associated text {{{ */
