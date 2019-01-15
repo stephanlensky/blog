@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset='utf-8'/>
     	<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="../../css/style.css">
-		<title>How Not to Protect Your Music - slensky.com</title>
+		<link rel="stylesheet" href="../../css/code-highlight.css">
+                
+                <title>How Not to Protect Your Music - slensky.com</title>
 		
                 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
                 <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
@@ -33,73 +36,91 @@
 			<h1><a href="#">How Not to Protect Your Music</a></h1>
 			<h2>&mdash; 23 January, 2017</h2>
 			<p>Ages pass and seasons change, yet one thing stays the same: people will always find a way to download your web content. Just look at the monolithic <a href="https://rg3.github.io/youtube-dl/">youtube-dl</a> project with support for almost <a href="https://rg3.github.io/youtube-dl/supportedsites.html">one thousand supported sites</a> and the effect is easy to see. Of course, some websites make it easier than others.</p>
+
 <h3 id="dj-record-sharing-pools">DJ Record Sharing Pools</h3>
+
 <p>Picture this: you're a DJ, making <em>sick</em> song edits, and you want to share them with your fellow DJ boys. Or maybe you're looking for a clean version of this one really cool song, and are hoping that another DJ has already gone through the work of making one so you don't have to. Where do you go? The answer is any of the numerous DJ record sharing pools available online. These services work by charging a subscription fee to allow DJs to come and share their tracks with one another, making the job easier for everyone. Of course, the record sharing pool keeps all of the money and the DJs get... nothing. This doesn't sound like a very good situation to me.</p>
+
 <p>One such site, <a href="https://digitaldjpool.com">digitaldjpool.com</a>, has clearly done some serious SEO and shows up in many Google searches for clean versions or edits of songs. One fateful evening I was idly trying to find a clean version of Big Dipper by the Cataracs (great song, by the way) to play at a dance and I found one hosted on this site. Unsurprisingly, the download button is greyed out.</p>
-<p><img alt="Greyed out download button" src="../../img/20170123_download_button.png" />
+
+<p><img src="../../img/20170123_download_button.png" alt="Greyed out download button" />
 <span class='caption'>Heck.</span></p>
+
 <h3 id="solving-the-problem-like-a-true-hacker">Solving the Problem Like a True Hacker</h3>
+
 <p>I might have given up at this point and tried some other site, but I did notice one thing which really intrigued me: this particular site seems to let you listen to a preview of the song. A preview which is... actually the entire song! After seeing this, I knew what I had to do. Inspect element on the audio controls for the song preview.</p>
-<p><img alt="Chrome's inspect element window" src="../../img/20170123_expert_hacking.png" />
+
+<p><img src="../../img/20170123_expert_hacking.png" alt="Chrome's inspect element window" />
 <span class='caption'>Real time footage of hacking</span></p>
+
 <p>Hm, looks like they're using <a href="http://jplayer.org/">jplayer</a> to play their audio, which means that there should be an audio tag with the song link right under the jplayer div:</p>
-<pre><code>&lt;div id="jplayer" class="jp-jplayer"&gt;
-    &lt;img id="jp_poster_0"&gt;
-    &lt;audio id="jp_audio_0" preload="none" 
-        src="https://digitaldjpool.com/Media/Preview/Preview_Quality_Only_AnaxwvvpyPImcPKYgYHHXHfjUANXe4yo3-BhX1E5Q6A9BYpZJR1AnwaVVQc9Aivu0"&gt;
-    &lt;/audio&gt;
-&lt;/div&gt;
-</code></pre>
-<p>Aha! That link points to a full length mp3 of the song. You'll notice that there's some scary text about the audio only being preview quality, but the mp3 seems to be 320kbps and the song sounds fine so I'm not too worried. This method for extracting the song link still isn't ideal though, as the jplayer HTML is only generated after you press the play button. Probably the song link is somewhere in the source of the page already, and is used to create the jplayer HTML. Let's open up the page source (Ctrl+U in Chrome) and see what we can find. I searched for the beginning of the filename ("Preview_Quality_Only") and found something interesting.</p>
-<pre><code>&lt;input type="hidden" value="50665" class="hid-song-id" /&gt;
-&lt;input type="hidden" value="The Cataracs ft Luciana" class="hid-song-artist" /&gt;
-&lt;input type="hidden" value="Big Dipper" class="hid-song-title" /&gt;
-&lt;input type="hidden" value="Clean" class="hid-song-version" /&gt;
-&lt;input type="hidden" value="" class="hid-song-image" /&gt;
-&lt;input type="hidden" value="/Media/Preview/Preview_Quality_Only_9MUhFnVnAkVMAAIJLTBbVyFaBWnGF3uu16Kz1GcMH8h_kE4n7WHLLsZ4pOZruTqM0" class="hid-song-preview-url"  /&gt;
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;jplayer&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;jp-jplayer&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;jp_poster_0&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">audio</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;jp_audio_0&quot;</span> <span class="na">preload</span><span class="o">=</span><span class="s">&quot;none&quot;</span> 
+        <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://digitaldjpool.com/Media/Preview/Preview_Quality_Only_AnaxwvvpyPImcPKYgYHHXHfjUANXe4yo3-BhX1E5Q6A9BYpZJR1AnwaVVQc9Aivu0&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">audio</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>Aha! That link points to a full length mp3 of the song. You'll notice that there's some scary text about the audio only being preview quality, but the mp3 seems to be 320kbps and the song sounds fine so I'm not too worried. This method for extracting the song link still isn't ideal though, as the jplayer HTML is only generated after you press the play button. Probably the song link is somewhere in the source of the page already, and is used to create the jplayer HTML. Let's open up the page source (Ctrl+U in Chrome) and see what we can find. I searched for the beginning of the filename ("Preview<em>Quality</em>Only") and found something interesting.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;50665&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;hid-song-id&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;The Cataracs ft Luciana&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;hid-song-artist&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Big Dipper&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;hid-song-title&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Clean&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;hid-song-version&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;hid-song-image&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;/Media/Preview/Preview_Quality_Only_9MUhFnVnAkVMAAIJLTBbVyFaBWnGF3uu16Kz1GcMH8h_kE4n7WHLLsZ4pOZruTqM0&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;hid-song-preview-url&quot;</span>  <span class="p">/&gt;</span>
+</code></pre></div>
+
 <p>Everything we need to create a fully tagged mp3 handed to us on a silver platter. You'll notice that the URL for the song preview is different than it was in the jplayer HTML, but they both seem to point to the same thing, so I'm not complaining. Let's write a Python script to automate this process then, shall we?</p>
+
 <h3 id="python-ing-it-up">Python-ing it up</h3>
+
 <p>Yet again, Python is quick, easy, and the obvious choice (noticing a common theme among these posts? Python rocks&lt;3). We'll use <a href="http://docs.python-requests.org/en/master/">requests</a> to fetch the pages and <a href="https://www.crummy.com/software/BeautifulSoup/">beautifulsoup</a> to parse them.</p>
-<pre><code>import requests
-from bs4 import BeautifulSoup
-import shutil
-from mutagen.mp3 import MP3
-from mutagen.easyid3 import EasyID3
 
-# retrieve the page
-ddp_url = 'https://digitaldjpool.com/Songs/50665/The-Cataracs-ft-Luciana-Big-Dipper-Clean'
-r = requests.get(ddp_url)
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">mutagen.mp3</span> <span class="kn">import</span> <span class="n">MP3</span>
+<span class="kn">from</span> <span class="nn">mutagen.easyid3</span> <span class="kn">import</span> <span class="n">EasyID3</span>
 
-# parse for urls and metadata
-bs = BeautifulSoup(r.text, 'html.parser')
-url = bs.find('input', {'class': 'hid-song-preview-url'})['value']
-artist = bs.find('input', {'class': 'hid-song-artist'})['value']
-title = bs.find('input', {'class': 'hid-song-title'})['value']
-version = bs.find('input', {'class': 'hid-song-version'})['value']
+<span class="c1"># retrieve the page</span>
+<span class="n">ddp_url</span> <span class="o">=</span> <span class="s1">&#39;https://digitaldjpool.com/Songs/50665/The-Cataracs-ft-Luciana-Big-Dipper-Clean&#39;</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ddp_url</span><span class="p">)</span>
 
-# save the file
-save_dest = save_dest = artist + " - " + title + " (" + version + ").mp3"
-r = requests.get('http://digitaldjpool.com' + url, stream=True)
-with open(save_dest, 'wb') as f:
-    r.raw.decode_content = True
-    shutil.copyfileobj(r.raw, f)
+<span class="c1"># parse for urls and metadata</span>
+<span class="n">bs</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+<span class="n">url</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;hid-song-preview-url&#39;</span><span class="p">})[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+<span class="n">artist</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;hid-song-artist&#39;</span><span class="p">})[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+<span class="n">title</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;hid-song-title&#39;</span><span class="p">})[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+<span class="n">version</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;hid-song-version&#39;</span><span class="p">})[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
 
-# tag the file
-mp3 = MP3(save_dest, ID3=EasyID3)
-mp3['artist'] = artist
-mp3['title'] = title
-mp3.save()
-</code></pre>
+<span class="c1"># save the file</span>
+<span class="n">save_dest</span> <span class="o">=</span> <span class="n">save_dest</span> <span class="o">=</span> <span class="n">artist</span> <span class="o">+</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span> <span class="n">title</span> <span class="o">+</span> <span class="s2">&quot; (&quot;</span> <span class="o">+</span> <span class="n">version</span> <span class="o">+</span> <span class="s2">&quot;).mp3&quot;</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://digitaldjpool.com&#39;</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">save_dest</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode_content</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># tag the file</span>
+<span class="n">mp3</span> <span class="o">=</span> <span class="n">MP3</span><span class="p">(</span><span class="n">save_dest</span><span class="p">,</span> <span class="n">ID3</span><span class="o">=</span><span class="n">EasyID3</span><span class="p">)</span>
+<span class="n">mp3</span><span class="p">[</span><span class="s1">&#39;artist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">artist</span>
+<span class="n">mp3</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">title</span>
+<span class="n">mp3</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+
 <p>Huzzah! Free and automatic downloading (with artist/title tags!) from this poorly secured site. Not too bad for about an hour's worth of work. This can of course be made prettier (taking the URL in as an argument instead of having it hardcoded, adding support for album covers if the song has one, etc.), but this should do for my purposes.</p>
+
 <p>Bye, for now,<br/>Stephan</p>
+
 		</div>
 
 		<footer>
 			<a href='http://www.isc.org/downloads/software-support-policy/isc-license/'>&copy; ISC</a> //
-      		<a href='mailto:mail@slensky.com'>mail</a> //
-      		<a href='http://slensky.com'>root</a> //
-      		<a href='../../feed.xml'>atom</a>
+      		    <a href='mailto:mail@slensky.com'>mail</a> //
+      		    <a href='http://slensky.com'>root</a> //
+      		    <a href='../../feed.xml'>atom</a>
 		</footer>
 	</body>
 </html>

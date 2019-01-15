@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset='utf-8'/>
     	<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="../../css/style.css">
-		<title>Getting API Keys (the Easy Way) - slensky.com</title>
+		<link rel="stylesheet" href="../../css/code-highlight.css">
+                
+                <title>Getting API Keys (the Easy Way) - slensky.com</title>
 		
                 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
                 <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
@@ -33,19 +36,25 @@
 			<h1><a href="#">Getting API Keys (the Easy Way)</a></h1>
 			<h2>&mdash; 25 January, 2017</h2>
 			<p>Maybe you don't want to go through an arduous registration process, maybe the API you want to use is <a href="https://developer.spotify.com/technologies/libspotify/">deprecated and no longer issuing new keys</a> (libspotify plz), or maybe something else altogether. In any case, worry not, there is a better way. Short post today, look out for something bigger soon. ❤️️ </p>
+
 <h3 id="github-the-single-largest-repository-of-private-api-keys">GitHub, the Single Largest Repository of Private API Keys</h3>
+
 <p>Turns out that a <a href="https://alyssa.is/api-key-exposure/">surprising number of people</a> push their secret API keys to GitHub. Perhaps by mistake, or maybe they just don't care, but this means that it should be pretty easy to acquire one for our own purposes from an abandoned project. In my example, libspotify keys are stored in a file called <code>spotify_appkey.key</code>, so we should just be able to search GitHub for files with that name.</p>
-<p><img alt="GitHub search results for 'filename:spotify_appkey.key'" src="../../img/20170125_github_search.png" />
-<span class='caption'><a href="https://github.com/search?utf8=%E2%9C%93&amp;q=filename%3Aspotify_appkey.key&amp;type=Code&amp;ref=searchresults">The search results</a> for 'filename:spotify_appkey.key'</span></p>
+
+<p><img src="../../img/20170125_github_search.png" alt="GitHub search results for 'filename:spotify<em>appkey.key'" />
+<span class='caption'><a href="https://github.com/search?utf8=%E2%9C%93&amp;q=filename%3Aspotify_appkey.key&amp;type=Code&amp;ref=searchresults">The search results</a> for 'filename:spotify</em>appkey.key'</span></p>
+
 <p>That's 113 keys that are freely available online! Not too shabby. We can use these for basically anything we want, most of the projects are abandoned. Remember though, with great power comes great responsibility; don't do anything stupid :)</p>
+
 <p>See ya,<br>Stephan</p>
+
 		</div>
 
 		<footer>
 			<a href='http://www.isc.org/downloads/software-support-policy/isc-license/'>&copy; ISC</a> //
-      		<a href='mailto:mail@slensky.com'>mail</a> //
-      		<a href='http://slensky.com'>root</a> //
-      		<a href='../../feed.xml'>atom</a>
+      		    <a href='mailto:mail@slensky.com'>mail</a> //
+      		    <a href='http://slensky.com'>root</a> //
+      		    <a href='../../feed.xml'>atom</a>
 		</footer>
 	</body>
 </html>

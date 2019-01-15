@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset='utf-8'/>
     	<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="../../css/style.css">
-		<title>Hello, World - slensky.com</title>
+		<link rel="stylesheet" href="../../css/code-highlight.css">
+                
+                <title>Hello, World - slensky.com</title>
 		
                 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
                 <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
@@ -33,13 +36,18 @@
 			<h1><a href="#">Hello, World</a></h1>
 			<h2>&mdash; 25 December, 2016</h2>
 			<p>It's cold out and Christmas is here, time to curl up with a hot cocoa and blanket and read about how this blog was set up! ☕☕☕</p>
+
 <blockquote>
-<p>A "Hello, World!" program is a computer program that outputs or displays "Hello, World!" to the user. Being a very simple program in most programming languages, it is often used to illustrate the basic syntax of a programming language for a working program.
-<br/>-- Wikipedia</p>
+  <p>A "Hello, World!" program is a computer program that outputs or displays "Hello, World!" to the user. Being a very simple program in most programming languages, it is often used to illustrate the basic syntax of a programming language for a working program.
+  <br/>-- Wikipedia</p>
 </blockquote>
+
 <p>If you're reading this, hopefully it means that my little "Hello, World" program worked! What program, you ask? As it turns out, this entire blog was built with a simple static site generator that I wrote in a weekend using Python! Essentially, it's operates quite similarly to programs like <a href="https://jekyllrb.com/">Jekyll</a> and <a href="https://hexo.io/">Hexo</a>, only with fewer features and significantly more bugs! All jokes aside, I had way more fun solving this one myself than I would have if I had just taken one of these prebuilt solutions. Better to learn something, right? :)</p>
+
 <h3 id="the-goal">The Goal</h3>
+
 <p>We want our script to take a source directory that has posts organized in a nice, readable way (read: markdown, folders, etc.) and convert it to something accessible by a web browser (read: horrifying tag hell). I didn't really put a lot of thought into the directory structure I chose for the source files, but something like this seems to look pretty nice, at least:</p>
+
 <pre><code>$ tree
 ├── base
 │   └── css
@@ -57,8 +65,11 @@
     ├── homepage.html
     └── post.html
 </code></pre>
+
 <p>Everything inside the <strong>base</strong> folder is copied indiscriminately to the final build. This is useful for pages that never change (like an "about me" section, CSS, etc.). The <strong>posts</strong> directory contains a folder for every post that the blog has. Each of these folder is required to have a <code>post.md</code> file with the text content (formatted in markdown!). If there is a <code>date</code> file, the date inside will be used instead of the time the folder was last modified for the post timestamp. Any extra resources needed for the post (images, videos, audio, downloadable scripts, etc.) can also be included in the post's folder. Finally, pages in the blog are generated using the templates located under the <strong>templates</strong> folder.</p>
+
 <p>After our build script runs, we should end up with a website that looks like this:</p>
+
 <pre><code>$ tree
 ├── 2016
 │   └── 12
@@ -74,152 +85,181 @@
 ├── other
 └── vid
 </code></pre>
+
 <h3 id="copying-some-files">Copying some files</h3>
+
 <p>This isn't exactly a one step process, so let's break it up into pieces. First, we copy everything from <strong>base</strong> to our build directory, where our finished website will reside. This is pretty easy using  Python's <code>pathlib</code> and <code>shutil</code>, however, <code>shutil</code> refuses to overwrite files when copying, so we need to ensure that it never tries to.</p>
-<pre><code>def copy_base(base_dir, build_dir):
-    for f in base_dir.iterdir():
-        # check if there's a conflict, fix if there is
-        if build_dir.joinpath(f.relative_to('base')).exists():
-            rmtree(str(build_dir.joinpath(f.relative_to('base'))))
-        # copy the files
-        copytree(str(f), str(build_dir.joinpath(f.relative_to('base'))))
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_base</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">build_dir</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">base_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+        <span class="c1"># check if there&#39;s a conflict, fix if there is</span>
+        <span class="k">if</span> <span class="n">build_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">rmtree</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">build_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">))))</span>
+        <span class="c1"># copy the files</span>
+        <span class="n">copytree</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">build_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">))))</span>
+</code></pre></div>
+
 <p>One interesting thing to note about this code is the fact that we have to convert our <code>pathlib</code> objects to strings before we can use them in the <code>shutil</code> file manipulation functions. This is due to a weird bit of incosistency in Python's standard library that should be fixed in version 3.6 (see <a href="https://www.python.org/dev/peps/pep-0519/">PEP 519</a>)</p>
+
 <h3 id="getting-the-posts">Getting the posts</h3>
+
 <p>Next, we'll retrieve information about all of the blog posts in the <strong>posts</strong> folder, again, using <code>pathlib</code>. We'll store the results of our search in a list of dictionaries, each dictionary containing the actual post (as markdown), the date the post was last modified at, the timestamp from the <code>date</code> file (if there is one), and lists of paths for all other resources used.</p>
-<pre><code># retrieves information about the post in directory 'dir'
-def get_post(dir):
-    modified = 0
-    post = None
-    date = None
-    img = []
-    vid = []
-    audio = []
-    other = []
-    for f in dir.iterdir():
-        if f.is_dir():
-            raise OSError('subdirectories are not allowed for posts')
-        # store most recent modification time
-        if f.stat().st_mtime &gt; modified:
-            modified = f.stat().st_mtime
 
-        if f.name == 'post.md':
-            post = f
-        elif f.name == 'date':
-            date = f
+<div class="codehilite"><pre><span></span><code><span class="c1"># retrieves information about the post in directory &#39;dir&#39;</span>
+<span class="k">def</span> <span class="nf">get_post</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+    <span class="n">modified</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">vid</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">audio</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">other</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;subdirectories are not allowed for posts&#39;</span><span class="p">)</span>
+        <span class="c1"># store most recent modification time</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span> <span class="o">&gt;</span> <span class="n">modified</span><span class="p">:</span>
+            <span class="n">modified</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span>
 
-        # categorize resource types
-        elif f.name.endswith(('png', 'jpg', 'jpeg', 'gif')):
-            img.append(f)
-        elif f.name.endswith(('mp4', 'avi')):
-            vid.append(f)
-        elif f.name.endswith(('mp3', 'wav', 'ogg')):
-            audio.append(f)
-        else:
-            other.append(f)
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;post.md&#39;</span><span class="p">:</span>
+            <span class="n">post</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">f</span>
 
-    # make sure post.md was found
-    if post is None:
-        raise OSError('post.md not found in ' + dir.name)
+        <span class="c1"># categorize resource types</span>
+        <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="s1">&#39;jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">,</span> <span class="s1">&#39;gif&#39;</span><span class="p">)):</span>
+            <span class="n">img</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;mp4&#39;</span><span class="p">,</span> <span class="s1">&#39;avi&#39;</span><span class="p">)):</span>
+            <span class="n">vid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;mp3&#39;</span><span class="p">,</span> <span class="s1">&#39;wav&#39;</span><span class="p">,</span> <span class="s1">&#39;ogg&#39;</span><span class="p">)):</span>
+            <span class="n">audio</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">other</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-    # return everything in a dictionary
-    d = {
-        'name': dir.name,
-        'md': post.read_text(),
-        'img': img,
-        'vid': vid,
-        'audio': audio,
-        'other': other,
-        'modified': datetime.fromtimestamp(modified)
-    }
-    if date is not None:
-        d['date'] = parse(date.read_text())
+    <span class="c1"># make sure post.md was found</span>
+    <span class="k">if</span> <span class="n">post</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;post.md not found in &#39;</span> <span class="o">+</span> <span class="nb">dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-    return d
+    <span class="c1"># return everything in a dictionary</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">dir</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s1">&#39;md&#39;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
+        <span class="s1">&#39;img&#39;</span><span class="p">:</span> <span class="n">img</span><span class="p">,</span>
+        <span class="s1">&#39;vid&#39;</span><span class="p">:</span> <span class="n">vid</span><span class="p">,</span>
+        <span class="s1">&#39;audio&#39;</span><span class="p">:</span> <span class="n">audio</span><span class="p">,</span>
+        <span class="s1">&#39;other&#39;</span><span class="p">:</span> <span class="n">other</span><span class="p">,</span>
+        <span class="s1">&#39;modified&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">modified</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
 
-# gets the info for all posts in directory 'dir'
-def get_posts(dir):
-    posts = []
-    for p in dir.iterdir():
-        posts.append(get_post(p))
-    return posts
-</code></pre>
+    <span class="k">return</span> <span class="n">d</span>
+
+<span class="c1"># gets the info for all posts in directory &#39;dir&#39;</span>
+<span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+        <span class="n">posts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_post</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">posts</span>
+</code></pre></div>
+
 <p>A keen reader may have noticed that simply copying the original paths of our extra resources (like images) to the new build directory will not produce the result given earlier. Instead, we copy them to new directories based on their type (<code>/img/</code>, <code>/vid/</code>, <code>/audio/</code>, <code>/other/</code>) and salt their filenames with the date to avoid name conflicts in the future.</p>
-<pre><code>salt = post['modified'].strftime('%Y%m%d_')
-for i in post['img']:
-    new_name = salt + i.name
-    copy(str(i), str(BUILD_DIR.joinpath('img/' + new_name)))
-for v in post['vid']:
-    new_name = salt + v.name
-    copy(str(v), str(BUILD_DIR.joinpath('vid/' + new_name)))
-for a in post['audio']:
-    new_name = salt + a.name
-    copy(str(a), str(BUILD_DIR.joinpath('audio/' + new_name)))
-for o in post['other']:
-    new_name = salt + o.name
-    copy(str(o), str(BUILD_DIR.joinpath('other/' + new_name)))
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="n">salt</span> <span class="o">=</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;modified&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">]:</span>
+    <span class="n">new_name</span> <span class="o">=</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">BUILD_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;img/&#39;</span> <span class="o">+</span> <span class="n">new_name</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;vid&#39;</span><span class="p">]:</span>
+    <span class="n">new_name</span> <span class="o">=</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">BUILD_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;vid/&#39;</span> <span class="o">+</span> <span class="n">new_name</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;audio&#39;</span><span class="p">]:</span>
+    <span class="n">new_name</span> <span class="o">=</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">BUILD_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;audio/&#39;</span> <span class="o">+</span> <span class="n">new_name</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;other&#39;</span><span class="p">]:</span>
+    <span class="n">new_name</span> <span class="o">=</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">BUILD_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;other/&#39;</span> <span class="o">+</span> <span class="n">new_name</span><span class="p">)))</span>
+</code></pre></div>
+
 <h3 id="html-conversion">HTML conversion</h3>
+
 <p>Finally, we fix all links in the original markdown to reference the new location and name. The approach used here may be a little redundant, considering we already have the new filenames, but I'm not going to worry about it too much.</p>
-<pre><code>def fix_links(md, salt, filenames):
-    for f in filenames:
-        if f.endswith(IMG_EXT):
-            md = md.replace(f, '/img/' + salt + f)
-        elif f.endswith(VID_EXT):
-            md = md.replace(f, '/vid/' + salt + f)
-        elif f.endswith(AUDIO_EXT):
-            md = md.replace(f, '/audio/' + salt + f)
-        else:
-            md = md.replace(f, '/other/' + salt + f)
-    return md
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fix_links</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">salt</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">IMG_EXT</span><span class="p">):</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;/img/&#39;</span> <span class="o">+</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">VID_EXT</span><span class="p">):</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;/vid/&#39;</span> <span class="o">+</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">AUDIO_EXT</span><span class="p">):</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;/audio/&#39;</span> <span class="o">+</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;/other/&#39;</span> <span class="o">+</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">md</span>
+</code></pre></div>
+
 <p>Now that our markdown is ready, we can convert it to HTML using one of Python's many markdown modules. For convenience, we'll select <a href="https://pypi.python.org/pypi/Markdown">this</a> one. Conversion is done in a single line of code:</p>
-<pre><code>html = markdown.markdown(post['md'])
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">post</span><span class="p">[</span><span class="s1">&#39;md&#39;</span><span class="p">])</span>
+</code></pre></div>
+
 <p>All that's left is to construct the final HTML of the posts and homepage. For this, we'll use <a href="http://www.makotemplates.org/">Mako</a>, which is a superfast and easy to use HTML generation tool. Mako is a templating library, which means that it works by dropping variables and functionality into a normal HTML document. For example, consider this template:</p>
-<pre><code>&lt;html&gt;
-    &lt;body&gt;Hey $(name), how's it going?&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>Hey $(name), how&#39;s it going?<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+
 <p>If we want our document to address someone named "Slick", then we can call this Python code:</p>
+
 <pre><code>from mako.template import Template
 t = Template("&lt;html&gt;&lt;body&gt;Hey $(name), how's it going?&lt;/body&lt;/html&gt;")
 print(t.render(name='Slick')
 </code></pre>
+
 <p>This outputs an HTML page that looks like this:</p>
-<pre><code>&lt;html&gt;
-    &lt;body&gt;Hey Slick, how's it going?&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
+
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>Hey Slick, how&#39;s it going?<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+
 <p>This is a pretty simplistic example, but luckily we're running a pretty simplistic blog, so writing the dynamic section of our post template shouldn't be too difficult:</p>
-<pre><code>&lt;div id="wrapper"&gt;
-    &lt;h1&gt;&lt;a href="#"&gt;${name}&lt;/a&gt;&lt;/h1&gt;
-    &lt;h2&gt;&amp;mdash; ${date}&lt;/h2&gt;
+
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;wrapper&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">&gt;</span>${name}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="ni">&amp;mdash;</span> ${date}<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
     ${content}
-&lt;/div&gt;
-</code></pre>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+
 <p>Similarly, the homepage:</p>
-<pre><code>&lt;div id="wrapper"&gt;
-    &lt;ul&gt;
+
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;wrapper&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
     % for n, t, l in items:
-        &lt;li&gt;${n} - &lt;a href=${l}&gt;${t}&lt;/a&gt;&lt;/li&gt;
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>${n} - <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">${l}</span><span class="p">&gt;</span>${t}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
     % endfor
-    &lt;/ul&gt;
-&lt;/div&gt;
-</code></pre>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+
 <p>Much of the static HTML has been omitted for brevity, but this should give you an idea of how the templating works. With that finished, all that's left to do is create files in the build directory for <code>index.html</code> and the each post. I'll leave this as an exercise to the reader, as this blog post has gotten much longer than I ever intended it to. The final <code>build.py</code> script for this site will be available soon&trade;, I just have to clean up the code a bit. For a detailed look at the results, just look around you!</p>
+
 <p>Anyway, It's been a fun first entry friends... and don't worry, probably one of the most code heavy that will ever be written! If nothing else, at least it will help me document my own code :)</p>
+
 <p>Until next time,
 <br/>
 Stephan &lt;3</p>
+
 <p><strong>Update 1/4/17:</strong> Build script now available <a href="https://gist.github.com/kidcontact/56b094f7586201d45f72712c2dedf009">here</a>! Make sure all of the dependencies are installed :)</p>
+
 		</div>
 
 		<footer>
 			<a href='http://www.isc.org/downloads/software-support-policy/isc-license/'>&copy; ISC</a> //
-      		<a href='mailto:mail@slensky.com'>mail</a> //
-      		<a href='http://slensky.com'>root</a> //
-      		<a href='../../feed.xml'>atom</a>
+      		    <a href='mailto:mail@slensky.com'>mail</a> //
+      		    <a href='http://slensky.com'>root</a> //
+      		    <a href='../../feed.xml'>atom</a>
 		</footer>
 	</body>
 </html>
