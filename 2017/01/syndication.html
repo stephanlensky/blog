@@ -57,7 +57,7 @@
 
 <span class="c1"># properties for each post</span>
 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">posts</span><span class="p">:</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://blog.kidcontact.org/{}/{}/{}.html&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://blog.slensky.com/{}/{}/{}.html&#39;</span>
         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">sanitized_name</span><span class="p">)</span>
     <span class="n">fe</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">add_entry</span><span class="p">()</span>
     <span class="n">fe</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
