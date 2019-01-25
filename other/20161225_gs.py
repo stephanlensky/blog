@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from pathlib import Path
 from shutil import copy, copytree, rmtree
 from datetime import datetime
@@ -5,7 +6,7 @@ from dateutil.parser import parse
 from mako.template import Template
 from feedgen.feed import FeedGenerator
 import re
-import markdown
+import markdown2
 import sys
 import os
 import pytz
@@ -28,19 +29,25 @@ AUDIO_EXT = ('mp3', 'wav', 'ogg')
 
 # hardcoded rss fields
 fg = FeedGenerator()
-fg.title("Kid Contact's Blog")
-fg.id('http://blog.kidcontact.org')
-fg.subtitle('Broadcasting obscure and eclectic crap to the masses')
-fg.author({'name': 'Stephan Lensky', 'email': 'stephanl.public@gmail.com'})
-fg.link({'href': 'http://blog.kidcontact.org'})
+fg.title("Stephan's Blog")
+fg.id('http://blog.slensky.com')
+fg.subtitle('Sharing obscure workarounds and interesting programming stories')
+fg.author({'name': 'Stephan Lensky', 'email': 'mail@slensky.com'})
+fg.link({'href': 'http://blog.slensky.com'})
 fg.language('en')
 fg.updated(datetime.now(pytz.timezone('America/New_York')).isoformat())
 
 def copy_base(base, build):
     for f in base.iterdir():
         if build.joinpath(f.relative_to('base')).exists():
-            rmtree(str(build.joinpath(f.relative_to('base'))))
-        copytree(str(f), str(build.joinpath(f.relative_to('base'))))
+            if os.path.isdir(str(f)):
+                rmtree(str(build.joinpath(f.relative_to('base'))))
+            else:
+                os.remove(str(build.joinpath(f.relative_to('base'))))
+        if os.path.isdir(str(f)):
+            copytree(str(f), str(build.joinpath(f.relative_to('base'))))
+        else:
+            copy(str(f), str(build.joinpath(f.relative_to('base'))))
 
 def get_post(dir):
     modified = 0
@@ -96,17 +103,19 @@ def get_posts(dir):
 def fix_links(md, salt, filenames):
     for f in filenames:
         if f.endswith(IMG_EXT):
-            md = md.replace(f, '/img/' + salt + f)
+            md = md.replace(f, '../../img/' + salt + f)
         elif f.endswith(VID_EXT):
-            md = md.replace(f, '/vid/' + salt + f)
+            md = md.replace(f, '../../vid/' + salt + f)
         elif f.endswith(AUDIO_EXT):
-            md = md.replace(f, '/audio/' + salt + f)
+            md = md.replace(f, '../../audio/' + salt + f)
         else:
-            md = md.replace(f, '/other/' + salt + f)
+            md = md.replace(f, '../../other/' + salt + f)
     return md
 
 def make_post(post, template):
-    parsed = markdown.markdown(post['md'])
+
+    parsed = markdown2.markdown(post['md'], extras=['fenced-code-blocks', 'header-ids'])
+    
     if 'date' in post:
         date = post['date'].strftime('%d %B, %Y')
     else:
@@ -135,7 +144,7 @@ def make_homepage(posts, template):
             date = d[k]['modified']
         r = re.compile('[^a-zA-Z ]')
         sanitized_name = r.sub('', d[k]['name']).replace(' ', '-').lower()
-        l = 'http://blog.kidcontact.org/' + k[:4] + '/' + k[4:6] + '/' + sanitized_name + '.html'
+        l = k[:4] + '/' + k[4:6] + '/' + sanitized_name + '.html'
         items.append((s, d[k]['name'], l))
 
     items = reversed(items)
@@ -155,39 +164,55 @@ if len(sys.argv) > 1 and sys.argv[1] == 'clean':
         else:
             os.remove(str(f))
 
-
+# copies everything in BASE_DIR over to BUILD_DIR without further processing
 copy_base(BASE_DIR, BUILD_DIR)
+
 posts = get_posts(POST_DIR)
 for p in posts:
-    salt = p['modified'].strftime('%Y%m%d_')
+    
+    # salt any media filenames with the date of the post they're linked to
+    # avoids filename conflicts in the future
+    if 'date' in p:
+        date = p['date']
+    else:
+        date = p['modified']
+    salt = date.strftime('%Y%m%d_')
     filenames = [i.name for i in p['img']] \
                 + [v.name for v in p['vid']] \
                 + [a.name for a in p['audio']] \
                 + [o.name for o in p['other']]
     p['md'] = fix_links(p['md'], salt, filenames)
-
+    
+    # convert markdown to html and copy it into the template
     html = make_post(p, POST_TEMPLATE.read_text())
-
+    
+    # directory for posts is YEAR/MONTH/post-name.html
     if 'date' in p:
         date = p['date']
     else:
         date = p['modified']
     new_post_dir = BUILD_DIR.joinpath(date.strftime('%Y/%m'))
+    
+    # make paths for media directories
     img_dir = BUILD_DIR.joinpath('img')
     vid_dir = BUILD_DIR.joinpath('vid')
     audio_dir = BUILD_DIR.joinpath('audio')
     other_dir = BUILD_DIR.joinpath('other')
-
+    
+    # make sure all of the directories exist
     new_post_dir.mkdir(exist_ok=True, parents=True)
     img_dir.mkdir(exist_ok=True, parents=True)
     vid_dir.mkdir(exist_ok=True, parents=True)
     audio_dir.mkdir(exist_ok=True, parents=True)
     other_dir.mkdir(exist_ok=True, parents=True)
-
+    
+    # sanitize post name (lowercase, spaces converted to hyphens, special chars removed)
     r = re.compile('[^a-zA-Z ]')
     sanitized_name = r.sub('', p['name']).replace(' ', '-').lower()
+    # create html file in the newly made post directory using the sanitized name
     new_post_dir.joinpath(sanitized_name + '.html').write_text(html)
-
+    
+    # copy media over
     for i in p['img']:
         new_name = salt + i.name
         copy(str(i), str(BUILD_DIR.joinpath('img/' + new_name)))
@@ -199,10 +224,11 @@ for p in posts:
         copy(str(a), str(BUILD_DIR.joinpath('audio/' + new_name)))
     for o in p['other']:
         new_name = salt + o.name
-        copy(str(o), str(BUILD_DIR.j1oinpath('other/' + new_name)))
+        copy(str(o), str(BUILD_DIR.joinpath('other/' + new_name)))
 
     # rss item gen
-    url = 'http://blog.kidcontact.org/{}/{}/{}.html'.format(p['date'].year, p['date'].month, sanitized_name)
+    url = 'http://blog.slensky.com/{}/{}/{}.html'\
+        .format(p['date'].year, p['date'].month, sanitized_name)
     fe = fg.add_entry()
     fe.id(url)
     fe.title(p['name'])
