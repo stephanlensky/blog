@@ -1,51 +1,68 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset='utf-8'/>
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="../../css/style.css">
-		<link rel="stylesheet" href="../../css/code-highlight.css">
-                
-                <title>Syndication - slensky.com</title>
-		
-                <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-                <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
-                <link rel="manifest" href="/manifest.json">
-                <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-                <meta name="theme-color" content="#ffffff">
+  
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/code-highlight.css" />
+  <title>Syndication - slensky.com</title>
 
-                <script>
-		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+  <meta name="theme-color" content="#ffffff" />
 
-		  ga('create', 'UA-56339229-2', 'auto');
-		  ga('send', 'pageview');
-		</script>
-	</head>
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(
+      window,
+      document,
+      "script",
+      "https://www.google-analytics.com/analytics.js",
+      "ga"
+    );
 
-	<body>
-		<header>
-			
-      		<h2><a href='http://slensky.com'>Stephan Lensky</a>, software developer, <a href='http://blog.slensky.com'>amateur writer</a></h2>
-		</header>
+    ga("create", "UA-56339229-2", "auto");
+    ga("send", "pageview");
+  </script>
+</head>
 
-		<div id="wrapper">
-			<h1><a href="#">Syndication</a></h1>
-			<h2>&mdash; 04 January, 2017</h2>
-			<p>In <a href="../../2016/12/hello-world.html">last week's episode of Dragon Ball Z</a>, we went over the basics of how the static site generator for this blog is set up. Since then, I've updated it to generate an <a href="../../feed.xml">Atom feed</a> for the site using the wonderful Python library <a href="https://github.com/lkiesow/python-feedgen">feedgen</a>. Took about 10 new lines of code and 15 minutes altogether including setup.</p>
 
+  <body>
+    <header>
+  <h2>
+    <a href="http://slensky.com">Stephan Lensky</a>, software developer,
+    <a href="/">amateur writer</a>
+  </h2>
+</header>
+
+
+    <div id="wrapper">
+      <h1>
+        <a href="#">Syndication</a>
+      </h1>
+      <h2>&mdash; 04 January, 2017</h2>
+
+      <p>In <a href="/2016/12/hello-world.html">last week's episode of Dragon Ball Z</a>, we went over the basics of how the static site generator for this blog is set up. Since then, I've updated it to generate an <a href="/feed.xml">Atom feed</a> for the site using the wonderful Python library <a href="https://github.com/lkiesow/python-feedgen">feedgen</a>. Took about 10 new lines of code and 15 minutes altogether including setup.</p>
 <h3 id="atom-feed">Atom Feed?</h3>
-
 <p>Atom is a <a href="https://en.wikipedia.org/wiki/Broadcast_syndication">syndication</a> format spec which expands greatly on previously implemented standards (such as RSS). For those who don't want to read that monster of a Wikipedia article, a syndication file in the context of a blog is simply a file containing basic metadata about the website and the posts on the site. It provides a quick way for dedicated blog readers to aggregate post information about a number of different sites, provided these sites all have a syndication file. There are a number of different standards for what this syndication file should look like, most notable RSS and Atom. Atom's <a href="https://tools.ietf.org/html/rfc4287">RFC</a> was first published in 2005 and 12 years later has finally reached a point where it's well supported enough to be usable by most people, so it was the format chosen for this site.</p>
-
 <h3 id="code">Code</h3>
-
 <p>There isn't much to using feedgen, since most of the code is simply declarative. There are of course many properties that I haven't bothered to set (such as a recommended time to check for updates, <em>yikes</em>...), but I'm pretty sure I covered all of the important ones.</p>
-
-<div class="codehilite"><pre><span></span><code><span class="c1"># blog properties</span>
+<div class="highlight"><pre><span></span><span class="c1"># blog properties</span>
 <span class="n">fg</span> <span class="o">=</span> <span class="n">FeedGenerator</span><span class="p">()</span>
 <span class="n">fg</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Stephan&#39;s Blog&quot;</span><span class="p">)</span>
 <span class="n">fg</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="s1">&#39;http://blog.slensky.com&#39;</span><span class="p">)</span>
@@ -57,7 +74,7 @@
 
 <span class="c1"># properties for each post</span>
 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">posts</span><span class="p">:</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://blog.slensky.com/{}/{}/{}.html&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://blog.slensky.com/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.html&#39;</span>
         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">sanitized_name</span><span class="p">)</span>
     <span class="n">fe</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">add_entry</span><span class="p">()</span>
     <span class="n">fe</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -69,19 +86,21 @@
 <span class="c1"># create files</span>
 <span class="n">fg</span><span class="o">.</span><span class="n">atom_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">BUILD_DIR</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/feed.xml&#39;</span><span class="p">)</span>
 <span class="n">fg</span><span class="o">.</span><span class="n">rss_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">BUILD_DIR</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/rss.xml&#39;</span><span class="p">)</span>
-</code></pre></div>
+</pre></div>
+<p>As you can see, feedgen makes it rather easy to generate both Atom and RSS feeds. Atom is honestly just a better format, but for your convenience RSS is also available <a href="/rss.xml">here</a>.</p>
+<p>Cheers,<br>
+Stephan</p>
 
-<p>As you can see, feedgen makes it rather easy to generate both Atom and RSS feeds. Atom is honestly just a better format, but for your convenience RSS is also available <a href="../../rss.xml">here</a>.</p>
+    </div>
 
-<p>Cheers,<br/>Stephan</p>
+    <footer>
+  <a href="http://www.isc.org/downloads/software-support-policy/isc-license/"
+    >&copy; ISC</a
+  >
+  // <a href="mailto:mail@slensky.com">mail</a> //
+  <a href="http://slensky.com">root</a> //
+  <a href="feed.xml">atom</a>
+</footer>
 
-		</div>
-
-		<footer>
-			<a href='http://www.isc.org/downloads/software-support-policy/isc-license/'>&copy; ISC</a> //
-      		    <a href='mailto:mail@slensky.com'>mail</a> //
-      		    <a href='http://slensky.com'>root</a> //
-      		    <a href='../../feed.xml'>atom</a>
-		</footer>
-	</body>
+  </body>
 </html>

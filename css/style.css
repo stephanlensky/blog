@@ -1,122 +1,129 @@
 /* Main blocks style {{{ */
 body {
-    padding: 0;
-    margin: 0;
-    font-family: sans-serif;
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
 }
 
 #wrapper {
-    width:90%;
-    max-width:720px;
-    margin:auto;
+  width: 90%;
+  max-width: 720px;
+  margin: auto;
 }
 
 footer {
-    text-align: center;
-    margin: auto;
-    width: 70%;
-    max-width: 720px;
-    border-top:1px solid #aaa;
-    padding: 10px;
+  text-align: center;
+  margin: auto;
+  width: 70%;
+  max-width: 720px;
+  border-top: 1px solid #aaa;
+  padding: 10px;
 }
 
 #blank {
-    height: 100%;
-    padding:10px;
+  height: 100%;
+  padding: 10px;
 }
 /* }}} */
 
 /* Titles and headers {{{ */
-h1, h3 {
-    font-family: sans-serif;
+h1,
+h3 {
+  font-family: sans-serif;
 }
 
-h1, h2 {
-    display: inline-block;
+h1,
+h2 {
+  display: inline-block;
 }
 
 h2 {
-    font-weight: normal;
-    color: #666;
-    font-size: 100%;
+  font-weight: normal;
+  color: #666;
+  font-size: 100%;
 }
 /* }}} */
 
 /* Pretty links {{{ */
 a {
-    color: #333;
-    text-decoration: none;
-    font-style: italic;
-    border-bottom: 1px dotted grey;
+  color: #333;
+  text-decoration: none;
+  font-style: italic;
+  border-bottom: 1px dotted grey;
 }
 
 a:hover {
-    color: #755;
+  color: #755;
 }
 
-h1 a, h2 a, h3 a {
-    font-style: normal;
+h1 a,
+h2 a,
+h3 a {
+  font-style: normal;
 }
 
 header {
-    text-align: center;
-    padding-top: 20px;
+  text-align: center;
+  padding-top: 20px;
 }
 
 header h1 a {
-    color: #fff;
-    border: none;
-    text-shadow: 0px 0px 8px black;
+  color: #fff;
+  border: none;
+  text-shadow: 0px 0px 8px black;
 }
 header h1 a:hover {
-    color: #fff;
-    text-shadow: 0px 0px 8px #755;
+  color: #fff;
+  text-shadow: 0px 0px 8px #755;
 }
 /* }}} */
 
 /* Coding style (<code>) {{{ */
 pre {
-    color: #EEEEEE;
-    font-family: monospace;
-    font-size: 100%;
-    background-color: #212121;
-    border: 1px solid #212121;
-    border-radius: 4px;
-    padding: 10px;
-    overflow-x: auto;
-    overflow-y: hidden;
+  color: #eeeeee;
+  font-family: monospace;
+  font-size: 100%;
+  background-color: #212121;
+  border: 1px solid #212121;
+  border-radius: 4px;
+  padding: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 pre code {
-    padding: 0;
-    border: none;
+  padding: 0;
+  border: none;
 }
 
 pre code a {
-    color: #eee;
+  color: #eee;
 }
 pre code a:hover {
-    color: #bbb;
+  color: #bbb;
 }
 /* }}} */
 
 /* Text Formatting {{{ */
-blockquote, q {
-    color: #666;
-    font-style: italic;
+blockquote,
+q {
+  color: #666;
+  font-style: italic;
 }
 
 blockquote {
-    border-left: 8px solid #aaa;
-    padding-left: 8px;
-    margin-left: -8px;
+  border-left: 8px solid #aaa;
+  padding-left: 8px;
+  margin-left: -8px;
 }
 
-.strike { text-decoration: line-through; }
+.strike {
+  text-decoration: line-through;
+}
 
 .math {
-    font-family: serif;
-    font-style: italic;
+  font-family: serif;
+  font-style: italic;
 }
 
 /* }}} */
@@ -124,40 +131,42 @@ blockquote {
 /* Images and associated text {{{ */
 
 img {
-    display: block;
-    padding: 8px;
-    border-radius: 4px;
-    margin:auto;
-    max-width: 100%;
+  display: block;
+  padding: 8px;
+  border-radius: 4px;
+  margin: auto;
+  max-width: 100%;
 }
 
-video { width: 100%; }
+video {
+  width: 100%;
+}
 
 /* Comment images - use with <span> or <div> */
 .caption {
-    display: block;
-    font-style: italic;
-    margin: auto;
-    text-align: center;
+  display: block;
+  font-style: italic;
+  margin: auto;
+  text-align: center;
 }
 /* }}} */
 
 /* Homepage specific */
 #intro {
-    display: flex;
-    align-items: center;
-    flex-flow: row;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  flex-flow: row;
+  flex-wrap: wrap;
 }
 .item-picture {
-    flex: 0 0 80px;
+  flex: 0 0 80px;
 }
 .item-text {
-    flex: 1 1 0;
-    padding-left: 25px;
+  flex: 1 1 0;
+  padding-left: 25px;
 }
 #intro p {
-    margin: 0;
+  margin: 0;
 }
 
 @media (max-width: 720px) {
@@ -174,4 +183,3 @@ video { width: 100%; }
   }
 }
 /* }}} */
-
